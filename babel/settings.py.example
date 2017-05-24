@@ -129,6 +129,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_SETTINGS = {
-    # 'postgres_password': '',
     'api_key': ''
 }

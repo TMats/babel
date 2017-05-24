@@ -20,7 +20,7 @@ updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ### en_articles
 ```
 CREATE TABLE en_articles(
-article_id SERIAL PRIMARY KEY,
+article_id INTEGER PRIMARY KEY,
 url VARCHAR NOT NULL UNIQUE,
 category_id INTEGER NOT NULL,
 media_id INTEGER NOT NULL,
