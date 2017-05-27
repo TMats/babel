@@ -1,8 +1,8 @@
 from django.db import models
+from django.utils.timezone import now
+
 
 # Create your models here.
-
-
 class Article(models.Model):
     url = models.CharField(unique=True, max_length=-1)
     category_id = models.IntegerField()
@@ -34,8 +34,8 @@ class EnArticle(models.Model):
     title = models.TextField()
     content = models.TextField()
     published_at = models.DateTimeField(blank=True, null=True)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=now())
+    updated_at = models.DateTimeField(default=now())
 
     class Meta:
         managed = False
