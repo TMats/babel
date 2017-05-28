@@ -35,8 +35,8 @@ class EnArticle(models.Model):
     title = models.TextField()
     content = models.TextField()
     published_at = models.DateTimeField(blank=True, null=True)
-    created_at = models.DateTimeField(default=now())
-    updated_at = models.DateTimeField(default=now())
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
 
     class Meta:
         managed = False
