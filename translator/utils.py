@@ -1,6 +1,7 @@
 from babel.settings import STATIC_SETTINGS
 import requests
 import json
+# import re
 
 BASE_URL = 'https://translation.googleapis.com/language/translate/v2'
 
@@ -15,3 +16,8 @@ def translate(text):
     else:
         print('API Error')
         return None
+
+
+# TODO: Translate articles whose number of text is more than 900
+# def split_text(text):
+#     splited_text = re.split('[.。]')
