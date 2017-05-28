@@ -39,8 +39,10 @@ def tokenize_articles():
 
 def usedoc2vec():
     article_tokens, article_ids = tokenize_articles()
-    trainings = [TaggedDocument(words=article_token, tags=[article_id]) for (article_token, article_id) in zip(article_tokens, article_ids)]
-    m = Doc2Vec(documents=trainings, dm=1, size=300, window=8, min_count=10, workers=4)
-    m.save("doc2vec.model")
-    print(m.docvecs.most_similar(1))
-
+    sentences = [TaggedDocument(words=article_token, tags=[article_id]) for (article_token, article_id) in zip(article_tokens, article_ids)]
+    model = Doc2Vec(size=50, min_count=2, iter=55)
+    model.build_vocab(sentences)
+    model.train(sentences, total_examples=model.corpus_count, epochs=model.iter)
+    # model.save("doc2vec.model")
+    # print(model.docvecs.most_similar(351))
+    return model
