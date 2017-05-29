@@ -1,5 +1,8 @@
 # Setup
-- Needs a postgres DB named 'babel'
+- Need a postgres DB named 'babel'
+
+## Article Crawler
+- https://github.com/TMats/babel_spider
 
 ## Tables
 ### articles
@@ -37,6 +40,26 @@ updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 CREATE TABLE ja_titles(
 article_id INTEGER PRIMARY KEY,
 ja_title TEXT NOT NULL,
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## doc2vec_article_clusters
+```
+CREATE TABLE doc2vec_article_clusters(
+article_id INTEGER PRIMARY KEY,
+cluster_id  INTEGER NOT NULL,
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## tfidf_article_clusters
+```
+CREATE TABLE tfidf_article_clusters(
+article_id INTEGER PRIMARY KEY,
+cluster_id  INTEGER NOT NULL,
 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

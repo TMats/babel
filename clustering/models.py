@@ -14,7 +14,7 @@ STOP_WORDS_FOR_TFIDF = [',', '.', "'", '"', "-", '(', ')']
 # Create your models here.
 class EnArticle(models.Model):
     article_id = models.IntegerField(primary_key=True)
-    url = models.CharField(unique=True, max_length=-1)
+    url = models.TextField(unique=True)
     category_id = models.IntegerField()
     media_id = models.IntegerField()
     title = models.TextField()
@@ -36,7 +36,7 @@ class EnArticle(models.Model):
         return cls.objects.get(article_id=article_id)
 
 
-class ArticleCluster(models.Model):
+class Doc2vecArticleCluster(models.Model):
     article_id = models.IntegerField(primary_key=True)
     cluster_id = models.IntegerField()
     created_at = models.DateTimeField(default=now())
@@ -44,8 +44,22 @@ class ArticleCluster(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'article_clusters'
-        # unique_together=('article_id', 'clustered_at')
+        db_table = 'doc2vec_article_clusters'
+
+    @classmethod
+    def get_cluster_article(cls, cluster_id):
+        return cls.objects.get(cluster_id=cluster_id)
+
+
+class TfidfArticleCluster(models.Model):
+    article_id = models.IntegerField(primary_key=True)
+    cluster_id = models.IntegerField()
+    created_at = models.DateTimeField(default=now())
+    updated_at = models.DateTimeField(default=now())
+
+    class Meta:
+        managed = False
+        db_table = 'tfidf_article_clusters'
 
     @classmethod
     def get_cluster_article(cls, cluster_id):
@@ -58,11 +72,11 @@ def tokenize_articles():
     return article_tokens, article_ids
 
 
-def cluster_by_doc2vec(threshold=0.7):
+def cluster_by_doc2vec(threshold=0.70):
     article_tokens, article_ids = tokenize_articles()
 
     sentences = [TaggedDocument(words=article_token, tags=[article_id]) for (article_token, article_id) in zip(article_tokens, article_ids)]
-    model = Doc2Vec(size=50, min_count=2, iter=55)
+    model = Doc2Vec(size=50, min_count=4, iter=80, workers=4)
     model.build_vocab(sentences)
     model.train(sentences, total_examples=model.corpus_count, epochs=model.iter)
 
@@ -76,7 +90,7 @@ def cluster_by_doc2vec(threshold=0.7):
 
     # save cluster
     for (article_id, cluster_id) in zip(article_ids, cluster_ids):
-        article_cluster = ArticleCluster(article_id=article_id, cluster_id=cluster_id)
+        article_cluster = Doc2vecArticleCluster(article_id=article_id, cluster_id=cluster_id)
         article_cluster.save()
 
 
@@ -96,5 +110,5 @@ def cluster_by_tfidf(threshold=0.5):
 
     # save cluster
     for (article_id, cluster_id) in zip(article_ids, cluster_ids):
-        article_cluster = ArticleCluster(article_id=article_id, cluster_id=cluster_id)
+        article_cluster = TfidfArticleCluster(article_id=article_id, cluster_id=cluster_id)
         article_cluster.save()

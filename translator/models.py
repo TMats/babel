@@ -5,7 +5,7 @@ from translator.utils import translate
 
 # Create your models here.
 class Article(models.Model):
-    url = models.CharField(unique=True, max_length=-1)
+    url = models.TextField(unique=True)
     category_id = models.IntegerField()
     media_id = models.IntegerField()
     title = models.TextField()
@@ -29,7 +29,7 @@ class Article(models.Model):
 
 class EnArticle(models.Model):
     article_id = models.IntegerField(primary_key=True)
-    url = models.CharField(unique=True, max_length=-1)
+    url = models.TextField(unique=True)
     category_id = models.IntegerField()
     media_id = models.IntegerField()
     title = models.TextField()
@@ -63,7 +63,7 @@ class JaTitle(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(unique=True, max_length=-1)
+    name = models.TextField(unique=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
 
@@ -73,7 +73,7 @@ class Category(models.Model):
 
 
 class Country(models.Model):
-    name = models.CharField(unique=True, max_length=-1)
+    name = models.TextField(unique=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
 
@@ -83,8 +83,8 @@ class Country(models.Model):
 
 
 class Medium(models.Model):
-    name = models.CharField(max_length=-1)
-    domain = models.CharField(unique=True, max_length=-1)
+    name = models.TextField()
+    domain = models.TextField(unique=True)
     country_id = models.IntegerField()
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()

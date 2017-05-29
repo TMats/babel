@@ -2,8 +2,6 @@ from nltk.tokenize import wordpunct_tokenize
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
-from nltk.tokenize import RegexpTokenizer
-
 CUSTOM_STOP_WORDS = ['quot', 'Xinhua', ';', '&', '.&', ',&', '&#']
 
 
