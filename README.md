@@ -32,6 +32,16 @@ updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
+### ja_titles
+```
+CREATE TABLE ja_titles(
+article_id INTEGER PRIMARY KEY,
+ja_title TEXT NOT NULL,
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
+
 ### categories
 ```
 CREATE TABLE categories(

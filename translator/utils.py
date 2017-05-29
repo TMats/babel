@@ -6,8 +6,8 @@ import json
 BASE_URL = 'https://translation.googleapis.com/language/translate/v2'
 
 
-def translate(text):
-    target_url = BASE_URL + '?key=' + STATIC_SETTINGS['api_key'] + '&q=' + text + '&target=en'
+def translate(text, target_language='en'):
+    target_url = BASE_URL + '?key=' + STATIC_SETTINGS['api_key'] + '&q=' + text + '&target=' + target_language
     print(target_url)
     r = requests.get(target_url)
     if r.status_code==200:

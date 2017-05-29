@@ -8,6 +8,8 @@ from scipy.sparse.csgraph import connected_components
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+STOP_WORDS_FOR_TFIDF = [',', '.', "'", '"', "-", '(', ')']
+
 
 # Create your models here.
 class EnArticle(models.Model):
@@ -81,7 +83,7 @@ def cluster_by_doc2vec(threshold=0.7):
 def cluster_by_tfidf(threshold=0.5):
     article_ids = EnArticle.get_article_ids()
     contents = [EnArticle.get_article(article_id).content for article_id in article_ids]
-    tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, lowercase=False, stop_words=None)
+    tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, lowercase=False, stop_words=STOP_WORDS_FOR_TFIDF)
     similarity_matrix = np.array(cosine_similarity(tfidf_vectorizer.fit_transform(contents)))
 
     matrix = np.eye(len(article_ids))

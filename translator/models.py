@@ -11,8 +11,8 @@ class Article(models.Model):
     title = models.TextField()
     content = models.TextField()
     published_at = models.DateTimeField(blank=True, null=True)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=now())
+    updated_at = models.DateTimeField(default=now())
 
     class Meta:
         managed = False
@@ -35,8 +35,8 @@ class EnArticle(models.Model):
     title = models.TextField()
     content = models.TextField()
     published_at = models.DateTimeField(blank=True, null=True)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=now())
+    updated_at = models.DateTimeField(default=now())
 
     class Meta:
         managed = False
@@ -47,7 +47,22 @@ class EnArticle(models.Model):
         return cls.objects.values_list('article_id', flat=True)
 
 
-class Categories(models.Model):
+class JaTitle(models.Model):
+    article_id = models.IntegerField(primary_key=True)
+    ja_title = models.TextField()
+    created_at = models.DateTimeField(default=now())
+    updated_at = models.DateTimeField(default=now())
+
+    class Meta:
+        managed = False
+        db_table = 'ja_titles'
+
+    @classmethod
+    def get_article_ids(cls):
+        return cls.objects.values_list('article_id', flat=True)
+
+
+class Category(models.Model):
     name = models.CharField(unique=True, max_length=-1)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
@@ -57,7 +72,7 @@ class Categories(models.Model):
         db_table = 'categories'
 
 
-class Countries(models.Model):
+class Country(models.Model):
     name = models.CharField(unique=True, max_length=-1)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
@@ -67,7 +82,7 @@ class Countries(models.Model):
         db_table = 'countries'
 
 
-class Media(models.Model):
+class Medium(models.Model):
     name = models.CharField(max_length=-1)
     domain = models.CharField(unique=True, max_length=-1)
     country_id = models.IntegerField()
@@ -93,7 +108,7 @@ def save_translated_articles(article_id):
     published_at = article.published_at
     # not English media
     # TODO: Stop HardCoding media_ids
-    if media_id in (1, 4, 5):
+    if media_id in (1, 4, 5, 8, 9, 10):
         title = translate(article.title)
         content = translate(article.content)
     # English media
@@ -102,7 +117,7 @@ def save_translated_articles(article_id):
         content = article.content
     # insert article to DB
     if title and content:
-        en_article = EnArticle(article_id=article_id, url= url, category_id=category_id, media_id=media_id, title=title, content=content, published_at=published_at)
+        en_article = EnArticle(article_id=article_id, url=url, category_id=category_id, media_id=media_id, title=title, content=content, published_at=published_at)
         en_article.save()
     else:
         print("article was not translated")
@@ -110,6 +125,32 @@ def save_translated_articles(article_id):
 
 def translate_untranslated_articles():
     article_ids = get_untranslated_article_ids()
-    for article_id in article_ids:
+    # newer article is to be processed prior
+    for article_id in sorted(article_ids, reverse=True):
         save_translated_articles(article_id)
         print(article_id)
+
+
+def get_untranslated_title_article_ids():
+    en_article_ids = EnArticle.get_article_ids()
+    title_article_ids = JaTitle.get_article_ids()
+    return list(set(en_article_ids)-set(title_article_ids))
+
+
+def translate_titles():
+    article_ids = get_untranslated_title_article_ids()
+    for article_id in article_ids:
+        article = Article.get_article(article_id)
+        # TODO: Stop HardCoding media_ids
+        # Japanese Media
+        if article.media_id in (1, ):
+            title = article.title
+        # Not Japanese Media
+        else:
+            title = translate(article.title, target_language='ja')
+
+        if title:
+            ja_title = JaTitle(article_id=article_id, ja_title=title)
+            ja_title.save()
+        else:
+            print("title was not translated")
