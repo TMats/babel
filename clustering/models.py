@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Count
 from django.utils.timezone import now
 from clustering.utils import tokenize
 from gensim.models.doc2vec import Doc2Vec
@@ -12,6 +13,26 @@ STOP_WORDS_FOR_TFIDF = [',', '.', "'", '"', "-", '(', ')']
 
 
 # Create your models here.
+class Article(models.Model):
+    id = models.IntegerField(primary_key=True)
+    url = models.TextField(unique=True)
+    category_id = models.IntegerField()
+    media_id = models.IntegerField()
+    title = models.TextField()
+    content = models.TextField()
+    published_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(default=now())
+    updated_at = models.DateTimeField(default=now())
+
+    class Meta:
+        managed = False
+        db_table = 'articles'
+
+    @classmethod
+    def get_article(cls, article_id):
+        return cls.objects.get(id=article_id)
+
+
 class EnArticle(models.Model):
     article_id = models.IntegerField(primary_key=True)
     url = models.TextField(unique=True)
@@ -29,11 +50,26 @@ class EnArticle(models.Model):
 
     @classmethod
     def get_article_ids(cls):
-        return list(cls.objects.values_list('article_id', flat=True))
+        return cls.objects.values_list('article_id', flat=True)
 
     @classmethod
     def get_article(cls, article_id):
         return cls.objects.get(article_id=article_id)
+
+
+class JaTitle(models.Model):
+    article_id = models.IntegerField(primary_key=True)
+    ja_title = models.TextField()
+    created_at = models.DateTimeField(default=now())
+    updated_at = models.DateTimeField(default=now())
+
+    class Meta:
+        managed = False
+        db_table = 'ja_titles'
+
+    @classmethod
+    def get_ja_title(cls, article_id):
+        return cls.objects.get(article_id=article_id).ja_title
 
 
 class Doc2vecArticleCluster(models.Model):
@@ -47,8 +83,12 @@ class Doc2vecArticleCluster(models.Model):
         db_table = 'doc2vec_article_clusters'
 
     @classmethod
-    def get_cluster_article(cls, cluster_id):
-        return cls.objects.get(cluster_id=cluster_id)
+    def get_top_cluster_ids(cls):
+        return cls.objects.values('cluster_id').annotate(Count('article_id')).order_by('article_id__count').reverse().values_list('cluster_id', flat=True)
+
+    @classmethod
+    def get_cluster_article_ids(cls, cluster_id):
+        return cls.objects.filter(cluster_id=cluster_id).values_list('article_id', flat=True)
 
 
 class TfidfArticleCluster(models.Model):
@@ -67,7 +107,7 @@ class TfidfArticleCluster(models.Model):
 
 
 def tokenize_articles():
-    article_ids = EnArticle.get_article_ids()
+    article_ids = list(EnArticle.get_article_ids())
     article_tokens = [tokenize(EnArticle.get_article(article_id).content) for article_id in article_ids]
     return article_tokens, article_ids
 
@@ -95,7 +135,7 @@ def cluster_by_doc2vec(threshold=0.70):
 
 
 def cluster_by_tfidf(threshold=0.5):
-    article_ids = EnArticle.get_article_ids()
+    article_ids = list(EnArticle.get_article_ids())
     contents = [EnArticle.get_article(article_id).content for article_id in article_ids]
     tfidf_vectorizer = TfidfVectorizer(tokenizer=tokenize, lowercase=False, stop_words=STOP_WORDS_FOR_TFIDF)
     similarity_matrix = np.array(cosine_similarity(tfidf_vectorizer.fit_transform(contents)))

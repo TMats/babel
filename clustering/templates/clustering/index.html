@@ -1,0 +1,55 @@
+{% extends "./layouts/base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+    {% for c in clusters %}
+        <section class="bs-docs-section">
+            <div class="row">
+                <div class="row-lg-12">
+                    <div class="page-header">
+                        <h1 id="type">
+                            <a href="http://translate.google.com/translate?sl=auto&tl=ja&js=y&prev=_t&hl=ja&ie=UTF-8&u={{ c.top_article.url}}&edit-text=&act=url">
+                                {{ c.top_article.title }}
+                            </a>
+                        </h1>
+                        <!--TODO: media is fake-->
+                        <small>NHK {{c.top_article.published_at|date:"Y/m/d H:i"}}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="thumbnail">
+                        <a href="./">
+                            <!--TODO: image is fake-->
+                            <img src="{% static 'img/noimage.png' %}">
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <!--TODO: description is fake-->
+                    <p>
+                        行く川のながれは絶えずして、しかも本の水にあらず。よどみに浮ぶうたかたは、かつ消えかつ結びて久しくとゞまることなし。世の中にある人とすみかと、またかくの如し。玉しきの都の中にむねをならべいらかをあらそへる、たかきいやしき人のすまひは、代々を經て盡きせぬものなれど、これをまことかと尋ぬれば、昔ありし家はまれなり。
+                    </p>
+                    <ul class="list-unstyled">
+                        {% for ar in c.cluster_articles %}
+                            <li>
+                                <ul class="list-unstyled">
+                                    <p>
+                                        <li>
+                                            <a href="http://translate.google.com/translate?sl=auto&tl=ja&js=y&prev=_t&hl=ja&ie=UTF-8&u={{ ar.url}}&edit-text=&act=url">{{ ar.title }}</a>
+                                        </li>
+                                        <li>
+                                            <!--TODO: media is fake-->
+                                            <small>NHK {{ar.published_at|date:"Y/m/d H:i"}}</small>
+                                        </li>
+                                    </p>
+                                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </section>
+    {% endfor %}
+{% endblock %}

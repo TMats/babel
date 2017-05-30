@@ -1,0 +1,45 @@
+{% load staticfiles %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Babel</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    </head>
+    <body>
+        <header>
+            <div class="navbar navbar-default navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <a href="./" class="navbar-brand">Babel</a>
+                        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
+                    <div class="navbar-collapse collapse" id="navbar-main">
+                        <ul class="nav navbar-nav">
+                            <li><a href="./">トップ</a></li>
+                            <li><a href="./">国際</a></li>
+                            <li class="dropdown active">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">ロジック<span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="./bootstrap-ja.html">Doc2Vec</a></li>
+                                    <li><a href="./bootstrap.html">Cosine Similarity</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="./">言語</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <article class="container">
+            {% block content %}
+                {{ content }}
+            {% endblock %}
+        </article>
+    </body>
+</html>
