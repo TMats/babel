@@ -88,16 +88,12 @@ class Doc2vecArticleCluster(models.Model):
         db_table = 'doc2vec_article_clusters'
 
     @classmethod
-    def get_big_cluster_ids(cls):
-        return cls.objects.values('cluster_id').annotate(Count('article__id')).order_by('article__id__count').reverse().values_list('cluster_id', flat=True)
-
-    @classmethod
     def get_diverse_cluster_ids(cls):
-        return cls.objects.values('cluster_id').annotate(Count('article__media__id', distinct=True)).order_by('article__media__id__count').reverse().values_list('cluster_id', flat=True)
+        return cls.objects.values('cluster_id').annotate(Count('article__media__id', distinct=True)).annotate(Count('article__id')).order_by('article__media__id__count', 'article__id__count').reverse().values_list('cluster_id', flat=True)
 
     @classmethod
-    def get_cluster_article_ids(cls, cluster_id):
-        return cls.objects.filter(cluster_id=cluster_id).order_by('article__published_at').reverse().values_list('article__id', flat=True)
+    def get_cluster_articles(cls, cluster_id):
+        return cls.objects.filter(cluster_id=cluster_id).order_by('article__published_at').reverse()
 
 
 class TfidfArticleCluster(models.Model):
@@ -112,8 +108,12 @@ class TfidfArticleCluster(models.Model):
         db_table = 'tfidf_article_clusters'
 
     @classmethod
-    def get_cluster_article(cls, cluster_id):
-        return cls.objects.get(cluster_id=cluster_id)
+    def get_diverse_cluster_ids(cls):
+        return cls.objects.values('cluster_id').annotate(Count('article__media__id', distinct=True)).annotate(Count('article__id')).order_by('article__media__id__count', 'article__id__count').reverse().values_list('cluster_id', flat=True)
+
+    @classmethod
+    def get_cluster_articles(cls, cluster_id):
+        return cls.objects.filter(cluster_id=cluster_id).order_by('article__published_at').reverse()
 
 
 class Media(models.Model):
@@ -149,19 +149,30 @@ def tokenize_articles():
     return article_tokens, article_ids
 
 
-def cluster_by_doc2vec(threshold=0.70):
+def cluster_by_doc2vec(threshold=0.75, one_to_many=True, dm=1):
     article_tokens, article_ids = tokenize_articles()
 
     sentences = [TaggedDocument(words=article_token, tags=[article_id]) for (article_token, article_id) in zip(article_tokens, article_ids)]
     model = Doc2Vec(size=50, min_count=4, iter=80, workers=4)
+    model = Doc2Vec(size=50, min_count=4, iter=200, workers=4)
+    # model = Doc2Vec(size=100, min_count=2, iter=2000, dm=1, workers=4)
     model.build_vocab(sentences)
     model.train(sentences, total_examples=model.corpus_count, epochs=model.iter)
 
     matrix = np.eye(len(article_ids))
     for article_id in article_ids:
-        similar_article_id, similarity = model.docvecs.most_similar(article_id)[0]
-        if similarity >= threshold:
-            matrix[article_ids.index(article_id)][article_ids.index(similar_article_id)] = 1
+        # one-to-many pair logic
+        if one_to_many:
+            similar_article_id_similarities = model.docvecs.most_similar(article_id)
+
+            for similar_article_id, similarity in similar_article_id_similarities:
+                if similarity >= threshold:
+                    matrix[article_ids.index(article_id)][article_ids.index(similar_article_id)] = 1
+        # one-to-one pair logic
+        else:
+            similar_article_id, similarity = model.docvecs.most_similar(article_id)[0]
+            if similarity >= threshold:
+                matrix[article_ids.index(article_id)][article_ids.index(similar_article_id)] = 1
     cluster_num, cluster_ids = connected_components(matrix)
     cluster_ids = list(cluster_ids)
 

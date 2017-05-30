@@ -19,5 +19,6 @@ from clustering import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^tfidf/', views.show_tfidf_index, name='tfidf_index'),
     url(r'$', views.show_index, name='index')
 ]
