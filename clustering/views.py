@@ -14,8 +14,9 @@ def get_clusters():
             article = Article.get_article(article_id)
             published_at = article.published_at
             url = article.url
+            media_id = article.media_id
             title = JaTitle.get_ja_title(article_id)
-            article_dict = {'title': title, 'url': url, 'published_at': published_at}
+            article_dict = {'title': title, 'url': url, 'published_at': published_at, 'media_id':media_id}
             cluster_articles.append(article_dict)
         # TODO: 暫定的にヘッドラインは先頭の記事なのでちゃんと選ぶ
         top_article = cluster_articles[0]

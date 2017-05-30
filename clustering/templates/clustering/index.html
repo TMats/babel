@@ -9,7 +9,7 @@
                     <div class="page-header">
                         <h1 id="type">
                             <a href="http://translate.google.com/translate?sl=auto&tl=ja&js=y&prev=_t&hl=ja&ie=UTF-8&u={{ c.top_article.url}}&edit-text=&act=url">
-                                {{ c.top_article.title }}
+                                {{c.top_article.title}}
                             </a>
                         </h1>
                         <!--TODO: media is fake-->
@@ -37,11 +37,11 @@
                                 <ul class="list-unstyled">
                                     <p>
                                         <li>
-                                            <a href="http://translate.google.com/translate?sl=auto&tl=ja&js=y&prev=_t&hl=ja&ie=UTF-8&u={{ ar.url}}&edit-text=&act=url">{{ ar.title }}</a>
+                                            <a href="http://translate.google.com/translate?sl=auto&tl=ja&js=y&prev=_t&hl=ja&ie=UTF-8&u={{ar.url}}&edit-text=&act=url">{{ ar.title }}</a>
                                         </li>
                                         <li>
                                             <!--TODO: media is fake-->
-                                            <small>NHK {{ar.published_at|date:"Y/m/d H:i"}}</small>
+                                            <small>{{ar.media_id}} {{ar.published_at|date:"Y/m/d H:i"}}</small>
                                         </li>
                                     </p>
                                 </ul>

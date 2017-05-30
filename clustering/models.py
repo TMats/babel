@@ -14,10 +14,11 @@ STOP_WORDS_FOR_TFIDF = [',', '.', "'", '"', "-", '(', ')']
 
 # Create your models here.
 class Article(models.Model):
-    id = models.IntegerField(primary_key=True)
+    # id = models.IntegerField(primary_key=True)
     url = models.TextField(unique=True)
     category_id = models.IntegerField()
-    media_id = models.IntegerField()
+    # media_id = models.IntegerField()
+    media = models.ForeignKey('Media')
     title = models.TextField()
     content = models.TextField()
     published_at = models.DateTimeField(blank=True, null=True)
@@ -34,7 +35,8 @@ class Article(models.Model):
 
 
 class EnArticle(models.Model):
-    article_id = models.IntegerField(primary_key=True)
+    # article_id = models.IntegerField(primary_key=True)
+    article = models.ForeignKey('Article', primary_key=True)
     url = models.TextField(unique=True)
     category_id = models.IntegerField()
     media_id = models.IntegerField()
@@ -50,15 +52,16 @@ class EnArticle(models.Model):
 
     @classmethod
     def get_article_ids(cls):
-        return cls.objects.values_list('article_id', flat=True)
+        return cls.objects.values_list('article__id', flat=True).all()
 
     @classmethod
     def get_article(cls, article_id):
-        return cls.objects.get(article_id=article_id)
+        return cls.objects.get(article__id=article_id)
 
 
 class JaTitle(models.Model):
-    article_id = models.IntegerField(primary_key=True)
+    # article_id = models.IntegerField(primary_key=True)
+    article = models.ForeignKey('Article', primary_key=True)
     ja_title = models.TextField()
     created_at = models.DateTimeField(default=now())
     updated_at = models.DateTimeField(default=now())
@@ -69,11 +72,13 @@ class JaTitle(models.Model):
 
     @classmethod
     def get_ja_title(cls, article_id):
-        return cls.objects.get(article_id=article_id).ja_title
+        return cls.objects.get(article__id=article_id).ja_title
+        # return cls.objects.select_related('article').get(article_id=article_id).ja_title
 
 
 class Doc2vecArticleCluster(models.Model):
-    article_id = models.IntegerField(primary_key=True)
+    # article_id = models.IntegerField(primary_key=True)
+    article = models.ForeignKey('Article', primary_key=True)
     cluster_id = models.IntegerField()
     created_at = models.DateTimeField(default=now())
     updated_at = models.DateTimeField(default=now())
@@ -84,15 +89,16 @@ class Doc2vecArticleCluster(models.Model):
 
     @classmethod
     def get_top_cluster_ids(cls):
-        return cls.objects.values('cluster_id').annotate(Count('article_id')).order_by('article_id__count').reverse().values_list('cluster_id', flat=True)
+        return cls.objects.values('cluster_id').annotate(Count('article__id')).order_by('article__id__count').reverse().values_list('cluster_id', flat=True)
 
     @classmethod
     def get_cluster_article_ids(cls, cluster_id):
-        return cls.objects.filter(cluster_id=cluster_id).values_list('article_id', flat=True)
+        return cls.objects.filter(cluster_id=cluster_id).values_list('article__id', flat=True)
 
 
 class TfidfArticleCluster(models.Model):
-    article_id = models.IntegerField(primary_key=True)
+    # article_id = models.IntegerField(primary_key=True)
+    article = models.ForeignKey('Article', primary_key=True)
     cluster_id = models.IntegerField()
     created_at = models.DateTimeField(default=now())
     updated_at = models.DateTimeField(default=now())
@@ -104,6 +110,33 @@ class TfidfArticleCluster(models.Model):
     @classmethod
     def get_cluster_article(cls, cluster_id):
         return cls.objects.get(cluster_id=cluster_id)
+
+
+class Media(models.Model):
+    name = models.TextField()
+    domain = models.TextField(unique=True)
+    # country_id = models.IntegerField()
+    country = models.ForeignKey('Country')
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'media'
+
+    @classmethod
+    def get_medium(cls, media_id):
+        return cls.objects.get(id=media_id)
+
+
+class Country(models.Model):
+    name = models.TextField(unique=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'countries'
 
 
 def tokenize_articles():
