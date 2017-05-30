@@ -88,12 +88,16 @@ class Doc2vecArticleCluster(models.Model):
         db_table = 'doc2vec_article_clusters'
 
     @classmethod
-    def get_top_cluster_ids(cls):
+    def get_big_cluster_ids(cls):
         return cls.objects.values('cluster_id').annotate(Count('article__id')).order_by('article__id__count').reverse().values_list('cluster_id', flat=True)
 
     @classmethod
+    def get_diverse_cluster_ids(cls):
+        return cls.objects.values('cluster_id').annotate(Count('article__media__id', distinct=True)).order_by('article__media__id__count').reverse().values_list('cluster_id', flat=True)
+
+    @classmethod
     def get_cluster_article_ids(cls, cluster_id):
-        return cls.objects.filter(cluster_id=cluster_id).values_list('article__id', flat=True)
+        return cls.objects.filter(cluster_id=cluster_id).order_by('article__published_at').reverse().values_list('article__id', flat=True)
 
 
 class TfidfArticleCluster(models.Model):

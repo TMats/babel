@@ -4,7 +4,8 @@ from clustering.models import Article,  JaTitle, EnArticle, Doc2vecArticleCluste
 
 # Create your views here
 def get_clusters():
-    cluster_ids = Doc2vecArticleCluster.get_top_cluster_ids()[0:10]
+    # cluster_ids = Doc2vecArticleCluster.get_big_cluster_ids()[0:20]
+    cluster_ids = Doc2vecArticleCluster.get_diverse_cluster_ids()[0:20]
     # TODO: Refactor below by using queryset join (this needs relation in models)
     clusters = []
     for cluster_id in cluster_ids:
@@ -14,9 +15,9 @@ def get_clusters():
             article = Article.get_article(article_id)
             published_at = article.published_at
             url = article.url
-            media_id = article.media_id
+            media_name = article.media.name
             title = JaTitle.get_ja_title(article_id)
-            article_dict = {'title': title, 'url': url, 'published_at': published_at, 'media_id':media_id}
+            article_dict = {'title': title, 'url': url, 'published_at': published_at, 'media_name': media_name}
             cluster_articles.append(article_dict)
         # TODO: 暫定的にヘッドラインは先頭の記事なのでちゃんと選ぶ
         top_article = cluster_articles[0]

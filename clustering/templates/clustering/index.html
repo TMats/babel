@@ -13,7 +13,7 @@
                             </a>
                         </h1>
                         <!--TODO: media is fake-->
-                        <small>NHK {{c.top_article.published_at|date:"Y/m/d H:i"}}</small>
+                        <small>{{c.top_article.media_name}} {{c.top_article.published_at|date:"Y/m/d H:i"}}</small>
                     </div>
                 </div>
             </div>
@@ -41,7 +41,7 @@
                                         </li>
                                         <li>
                                             <!--TODO: media is fake-->
-                                            <small>{{ar.media_id}} {{ar.published_at|date:"Y/m/d H:i"}}</small>
+                                            <small>{{ar.media_name}} {{ar.published_at|date:"Y/m/d H:i"}}</small>
                                         </li>
                                     </p>
                                 </ul>
