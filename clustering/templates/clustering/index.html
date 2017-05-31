@@ -27,7 +27,11 @@
                     <div class="thumbnail">
                         <a href="./">
                             <!--TODO: image is fake-->
-                            <img src="{% static 'img/noimage.png' %}">
+                            {% if c.top_article.image_url == None %}
+                                <img src="{% static 'img/noimage.png' %}">
+                            {% else %}
+                                <img src="{{c.top_article.image_url}}">
+                            {% endif %}
                         </a>
                     </div>
                 </div>

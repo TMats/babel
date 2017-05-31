@@ -13,6 +13,8 @@ class Article(models.Model):
     published_at = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(default=now())
     updated_at = models.DateTimeField(default=now())
+    image_url = models.TextField()
+
 
     class Meta:
         managed = False
