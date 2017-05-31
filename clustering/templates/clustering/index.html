@@ -8,11 +8,16 @@
                 <div class="row-lg-12">
                     <div class="page-header">
                         <h1 id="type">
-                            <a href="http://translate.google.com/translate?sl=auto&tl=ja&js=y&prev=_t&hl=ja&ie=UTF-8&u={{ c.top_article.url}}&edit-text=&act=url">
-                                {{c.top_article.title}}
-                            </a>
+                            {% if c.top_article.country_id == 1 %}
+                                <a href="{{c.top_article.url}}">
+                                    {{c.top_article.title}}
+                                </a>
+                            {% else %}
+                                <a href="http://translate.google.com/translate?sl=auto&tl=ja&js=y&prev=_t&hl=ja&ie=UTF-8&u={{c.top_article.url}}&edit-text=&act=url">
+                                    {{c.top_article.title}}
+                                </a>
+                            {% endif %}
                         </h1>
-                        <!--TODO: media is fake-->
                         <small>{{c.top_article.media_name}} {{c.top_article.published_at|date:"Y/m/d H:i"}}</small>
                     </div>
                 </div>
@@ -27,9 +32,7 @@
                     </div>
                 </div>
                 <div class="col-lg-8">
-                    <!--TODO: description is fake-->
                     <p>
-                        <!--行く川のながれは絶えずして、しかも本の水にあらず。よどみに浮ぶうたかたは、かつ消えかつ結びて久しくとゞまることなし。世の中にある人とすみかと、またかくの如し。玉しきの都の中にむねをならべいらかをあらそへる、たかきいやしき人のすまひは、代々を經て盡きせぬものなれど、これをまことかと尋ぬれば、昔ありし家はまれなり。-->
                         {{c.top_article.content_intro}}
                     </p>
                     <ul class="list-unstyled">
@@ -38,10 +41,17 @@
                                 <ul class="list-unstyled">
                                     <p>
                                         <li>
-                                            <a href="http://translate.google.com/translate?sl=auto&tl=ja&js=y&prev=_t&hl=ja&ie=UTF-8&u={{ar.url}}&edit-text=&act=url">{{ ar.title }}</a>
+                                            {% if ar.country_id == 1 %}
+                                                <a href="{{ar.url}}">
+                                                    {{ar.title}}
+                                                </a>
+                                            {% else %}
+                                                <a href="http://translate.google.com/translate?sl=auto&tl=ja&js=y&prev=_t&hl=ja&ie=UTF-8&u={{ar.url}}&edit-text=&act=url">
+                                                    {{ar.title}}
+                                                </a>
+                                            {% endif %}
                                         </li>
                                         <li>
-                                            <!--TODO: media is fake-->
                                             <small>{{ar.media_name}} {{ar.published_at|date:"Y/m/d H:i"}}</small>
                                         </li>
                                     </p>
