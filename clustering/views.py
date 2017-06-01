@@ -38,14 +38,12 @@ def get_clusters(article_cluster_class):
 
 
 def show_index(request):
-    print('show_doc2ved_index')
     clusters = get_clusters(Doc2vecArticleCluster)
     template_dict = {'clusters': clusters}
     return render(request, 'clustering/index.html', template_dict)
 
 
 def show_tfidf_index(request):
-    print('show_tfidf_index')
     clusters = get_clusters(TfidfArticleCluster)
     template_dict = {'clusters': clusters}
     return render(request, 'clustering/index.html', template_dict)
